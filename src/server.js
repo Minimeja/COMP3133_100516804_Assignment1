@@ -1,5 +1,5 @@
-const dns = require('dns');
-dns.setServers(['1.1.1.1', '8.8.8.8']);
+const dns = require("dns");
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
@@ -15,6 +15,7 @@ async function startServer() {
   await connectDB();
 
   const app = express();
+  app.use(express.json({ limit: "10mb" }));
 
   const server = new ApolloServer({
     typeDefs,

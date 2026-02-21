@@ -7,25 +7,37 @@ const userResolvers = {
       if (!password) throw new Error("Password is required");
       if (!username && !email) throw new Error("Username or email is required");
 
-      const user = await User.findOne({
-        $or: [{ username }, { email }]
-      });
+      // ✅ Safer query building
+      const query = [];
+      if (username) query.push({ username });
+      if (email) query.push({ email });
+
+      const user = await User.findOne({ $or: query });
 
       if (!user) throw new Error("Invalid credentials");
 
       const ok = await comparePassword(password, user.password);
       if (!ok) throw new Error("Invalid credentials");
 
-      return signToken({ userId: user._id, username: user.username, email: user.email });
+      return signToken({
+        userId: user._id,
+        username: user.username,
+        email: user.email
+      });
     }
   },
 
   Mutation: {
     signup: async (_, { username, email, password }) => {
-      if (!username || !email || !password) throw new Error("All fields are required");
+      if (!username || !email || !password)
+        throw new Error("All fields are required");
 
-      const existing = await User.findOne({ $or: [{ username }, { email }] });
-      if (existing) throw new Error("Username or email already exists");
+      const existing = await User.findOne({
+        $or: [{ username }, { email }]
+      });
+
+      if (existing)
+        throw new Error("Username or email already exists");
 
       const hashed = await hashPassword(password);
 
