@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, select: false } // hide password by default
+    password: { type: String, required: true, select: false } 
   },
   {
     timestamps: {
@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Make JSON output clean (ISO timestamps + no password)
 userSchema.set("toJSON", {
   transform: (doc, ret) => {
     if (ret.created_at instanceof Date) ret.created_at = ret.created_at.toISOString();

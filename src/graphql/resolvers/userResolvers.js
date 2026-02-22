@@ -7,12 +7,11 @@ const userResolvers = {
       if (!password) throw new Error("Password is required");
       if (!username && !email) throw new Error("Username or email is required");
 
-      // ✅ Safer query building
       const query = [];
       if (username) query.push({ username });
       if (email) query.push({ email });
 
-      const user = await User.findOne({ $or: query });
+      const user = await User.findOne({ $or: query }).select("+password");
 
       if (!user) throw new Error("Invalid credentials");
 

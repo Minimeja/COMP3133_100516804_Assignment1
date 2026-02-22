@@ -1,8 +1,8 @@
 const Employee = require("../../models/Employee");
-const uploadImage = require("../../utils/uploadImage");
 
 const employeeResolvers = {
   Query: {
+    
     getAllEmployees: async () => {
       return Employee.find().sort({ created_at: -1 });
     },
@@ -42,12 +42,6 @@ const employeeResolvers = {
 
       if (Number(args.salary) < 1000) throw new Error("Salary must be >= 1000");
 
-      // ✅ Upload to Cloudinary (if provided)
-      let photoUrl = null;
-      if (args.employee_photo) {
-        photoUrl = await uploadImage(args.employee_photo);
-      }
-
       const employee = await Employee.create({
         first_name: args.first_name,
         last_name: args.last_name,
@@ -57,7 +51,7 @@ const employeeResolvers = {
         salary: Number(args.salary),
         date_of_joining: args.date_of_joining,
         department: args.department,
-        employee_photo: photoUrl
+        employee_photo: args.employee_photo 
       });
 
       return employee;
@@ -73,11 +67,6 @@ const employeeResolvers = {
       if (updates.salary !== undefined && updates.salary !== null) {
         if (Number(updates.salary) < 1000) throw new Error("Salary must be >= 1000");
         updates.salary = Number(updates.salary);
-      }
-
-      // ✅ Upload new photo if provided
-      if (updates.employee_photo) {
-        updates.employee_photo = await uploadImage(updates.employee_photo);
       }
 
       const employee = await Employee.findByIdAndUpdate(id, updates, {
